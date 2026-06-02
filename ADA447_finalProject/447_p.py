@@ -6,15 +6,15 @@ import torch.optim as optim
 import numpy as np
 import matplotlib.pyplot as plt
 
-# =====================================================================
-# 0. REPRODUCIBILITY
-# =====================================================================
+
+#>>>>>>>>>>>>>>>>>>>>  REPRODUCIBILITY <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+
 torch.manual_seed(42)
 np.random.seed(42)
 
-# =====================================================================
-# 1. SYNTHETIC AIRCRAFT BALANCE DATA GENERATION
-# =====================================================================
+
+#>>>>>>>>>>>>>>> SYNTHETIC AIRCRAFT BALANCE DATA GENERATION <<<<<<<<<<<<<<<
+
 print("Simulating virtual aircraft balance data...")
 
 num_samples = 2000
@@ -75,9 +75,9 @@ X_data = np.column_stack((pitch_angle, pitch_velocity, limited_positions))
 # with an impossible motor movement.
 Y_data = ideal_positions
 
-# =====================================================================
-# 2. CREATE SEQUENCES FOR LSTM
-# =====================================================================
+
+#>>>>>>>>>>>>>>>>>>> 2. CREATE SEQUENCES FOR LSTM <<<<<<<<<<<<<<<<<<<<<<<"
+
 X_seq, Y_seq, physical_target_seq = [], [], []
 
 for i in range(len(X_data) - seq_length):
@@ -108,9 +108,9 @@ print("Y_train shape:", Y_train.shape)
 print("X_test shape:", X_test.shape)
 print("Y_test shape:", Y_test.shape)
 
-# =====================================================================
-# 3. PHYSICS PENALTY MATRIX FOR ATTENTION
-# =====================================================================
+ 
+# >>>>>>>>>>>>>>>>>>>>>>>>  PHYSICS PENALTY MATRIX FOR ATTENTION <<<<<<<<<<<<<<<<<<<<<<<<<<
+
 def create_attention_physics_penalty(x, max_speed=0.5, penalty_scale=4.0):
     """
     Creates a physics-based penalty matrix for the Attention mechanism.
@@ -176,9 +176,9 @@ def speed_limit_loss(prediction, x, max_speed=0.5):
     return torch.mean(violation ** 2)
 
 
-# =====================================================================
-# 4. PHYSICS-INFORMED ATTENTION MODULE
-# =====================================================================
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>> 4. PHYSICS-INFORMED ATTENTION MODULE <<<<<<<<<<<<<<<<<<<<<<<<
+
 class PhysicsInformedAttention(nn.Module):
     def __init__(self, hidden_dim, apply_physics=True, penalty_lambda=1.0):
         super().__init__()
@@ -210,9 +210,9 @@ class PhysicsInformedAttention(nn.Module):
         return context, attention_weights
 
 
-# =====================================================================
-# 5. AIRCRAFT BALANCING MODEL
-# =====================================================================
+
+#>>>>>>>>>>>>>>>>>>>>  AIRCRAFT BALANCING MODEL <<<<<<<<<<<<<<<<<<<<
+
 class AircraftBalancingModel(nn.Module):
     def __init__(self, num_sensors=3, hidden_dim=32, apply_physics=True):
         super().__init__()
@@ -265,9 +265,9 @@ class AircraftBalancingModel(nn.Module):
         return out, attention_weights
 
 
-# =====================================================================
-# 6. TRAINING
-# =====================================================================
+
+#>>>>>>>>>>>>>>>>>>>>>>>>> 6. TRAINING <<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 standard_model = AircraftBalancingModel(apply_physics=False)
 physics_model = AircraftBalancingModel(apply_physics=True)
 
@@ -292,9 +292,9 @@ for epoch in range(epochs):
         penalty_scale=4.0
     )
 
-    # -----------------------------
-    # Standard model
-    # -----------------------------
+    
+    #>>>>>>>>>>>>>>>>>> Standard model <<<<<<<<<<<<<<<<<<<<<<<<<<
+   
     opt_standard.zero_grad()
 
     pred_std, _ = standard_model(X_train, train_penalty_matrix)
@@ -333,9 +333,9 @@ for epoch in range(epochs):
         )
 
 
-# =====================================================================
-# 7. EVALUATION METRICS
-# =====================================================================
+
+# >>>>>>>>>>>>>>>>>>>>>>>>  EVALUATION METRICS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+
 def count_speed_violations(predictions, x, max_speed=0.5):
     """
     Counts how many predictions require the counterweight to move faster
@@ -415,9 +415,9 @@ print(f"Physics-Informed Model Smoothness Score: {phy_smoothness:.4f}")
 print("=========================================")
 
 
-# =====================================================================
-# 8. VISUALIZATION
-# =====================================================================
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>> VISUALIZATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<""
+
 plt.figure(figsize=(14, 6))
 
 plt.plot(
@@ -459,9 +459,9 @@ plt.tight_layout()
 plt.show()
 
 
-# =====================================================================
-# 9. ATTENTION VISUALIZATION FOR ONE SAMPLE
-# =====================================================================
+
+# >>>>>>>>>>>>>>>>>>>> ATTENTION VISUALIZATION FOR ONE SAMPLE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 sample_index = 20
 
 plt.figure(figsize=(8, 6))
